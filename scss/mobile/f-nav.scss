@@ -1,7 +1,7 @@
 // F NAV
 .f-nav {
   display: flex;
-  position: sticky;
+  position: fixed;
   bottom: 0;
   width: 100%;
   height: var(--f-nav-height);
