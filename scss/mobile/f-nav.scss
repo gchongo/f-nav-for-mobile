@@ -28,7 +28,8 @@
 
     &.active {
       .d-icon,
-      .btn .d-icon {
+      .btn .d-icon,
+      .tab-label {
         color: var(--tertiary);
       }
     }
@@ -147,6 +148,18 @@
     .d-icon {
       width: 1.4em;
       height: 1.4em;
+      @if $f-nav-show-labels == "true" {
+        width: 1.2em;
+        height: 1.2em;
+        margin-top: -0.75em;
+      }
+    }
+
+    .tab-label {
+      position: absolute;
+      transform: translateY(100%);
+      font-size: var(--font-down-3);
+      line-height: var(--line-height-medium);
     }
   }
 }
@@ -238,7 +251,6 @@ body.f-nav-hidden {
   
   // Topic elements scroll down position
   .d-toc-toggle,
-  #reply-control.draft,
   .posts-filtered-notice,
   #topic-progress-wrapper:not(.docked) {
     bottom: env(safe-area-inset-bottom);
@@ -249,11 +261,26 @@ body.f-nav-hidden {
 html:not(.anon) {
   body:not(.f-nav-hidden) {
     .d-toc-toggle,
-    #reply-control.draft,
     .posts-filtered-notice,
-    #topic-progress-wrapper:not(.docked) {
+    #topic-progress-wrapper:not(.docked) {      
       bottom: calc(var(--f-nav-height) + env(safe-area-inset-bottom));
       transition: bottom 0.1s linear;
+    }
+    
+    #reply-control.draft,
+    #reply-control.saving {
+      transform: translateY(calc(var(--f-nav-height) * -1));
+      transition: transform 0.1s linear;
+    }
+  }
+
+  &.ios-device {
+    body:not(.f-nav-hidden) {
+      #reply-control.draft,
+      #reply-control.saving {
+        transform: translateY(calc((var(--f-nav-height) + 100%) * -1));
+        transition: transform 0.1s linear;
+      }
     }
   }
     

@@ -35,6 +35,10 @@ f_nav_tabs:
           - notificationToRoute
           - notificationMenu
           - search
+f_nav_show_labels:
+  description: "Show tabs name under icon"
+  type: bool
+  default: false
 profile_extra_items:
   description: "Add items to the profile menu which appears before the Log Out button."
   type: objects

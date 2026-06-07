@@ -1,18 +1,12 @@
 import Component from "@glimmer/component";
+import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import { service } from "@ember/service";
+import { optionalRequire } from "discourse/lib/utilities";
 import DMenu from "float-kit/components/d-menu";
 import dIcon from "discourse-common/helpers/d-icon";
 import ChatIcon from "../messages/chat-icon";
 import MessagesIcon from "../messages/messages-icon";
-
-let ChatHeaderIconUnreadIndicator;
-
-try {
-  ChatHeaderIconUnreadIndicator = require("discourse/plugins/chat/discourse/components/chat/header/icon/unread-indicator").default;
-} catch (e) {
-  ChatHeaderIconUnreadIndicator = null;
-}
 
 export default class MultiTabMessages extends Component {
   @service site;
@@ -25,6 +19,12 @@ export default class MultiTabMessages extends Component {
     );
   }
 
+  get ChatHeaderIconUnreadIndicator() {
+    return optionalRequire(
+      "discourse/plugins/chat/discourse/components/chat/header/icon/unread-indicator"
+    );
+  }
+
   get currentUserInDnD() {
     return this.args.currentUserInDnD || this.currentUser.isInDoNotDisturb();
   }
@@ -32,6 +32,11 @@ export default class MultiTabMessages extends Component {
   @action
   onRegisterApi(api) {
     this.dMenu = api;
+  }
+
+  @action
+  closeMenu() {
+    this.dMenu.close();
   }
 
   <template>
@@ -50,7 +55,7 @@ export default class MultiTabMessages extends Component {
             {{#if this.currentUser.new_personal_messages_notifications_count}}
               <div class="message-unread-indicator -urgent"></div>
             {{/if}}
-            <ChatHeaderIconUnreadIndicator
+            <this.ChatHeaderIconUnreadIndicator
               @urgentCount={{@urgentCount}}
               @unreadCount={{@unreadCount}}
               @indicatorPreference={{@indicatorPreference}}
@@ -63,7 +68,7 @@ export default class MultiTabMessages extends Component {
             <li class="messages-icon">
               <MessagesIcon />
             </li>
-            <li class="chat-header-icon">
+            <li {{on "click" this.closeMenu}} class="chat-header-icon">
               <ChatIcon />
             </li>
           </ul>
