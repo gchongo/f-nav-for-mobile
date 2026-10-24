@@ -1,12 +1,11 @@
 import Component from "@ember/component";
 import { service } from "@ember/service";
 import { action } from "@ember/object";
-import { tracked } from "@glimmer/tracking";
 import didInsert from "@ember/render-modifiers/modifiers/did-insert";
 import willDestroy from "@ember/render-modifiers/modifiers/will-destroy";
-import { htmlSafe } from "@ember/template";
 import DiscourseURL from "discourse/lib/url";
 import DoNotDisturb from "discourse/lib/do-not-disturb";
+import EmbedMode from "discourse/lib/embed-mode";
 import FNavItem from "./f-nav-item";
 
 const SCROLL_MAX = 30;
@@ -63,7 +62,12 @@ export default class FNav extends Component {
 
   // Computed properties for visibility and states
   get shouldShowNav() {
-    return this.currentUser && this.site.mobileView && this.tabs.length;
+    return (
+      this.currentUser &&
+      this.site.mobileView &&
+      !EmbedMode.enabled &&
+      this.tabs.length
+    );
   }
 
   get canUseChat() {
@@ -109,6 +113,10 @@ export default class FNav extends Component {
     return this.currentUser.all_unread_notifications_count 
       ? `${base}?filter=unread` 
       : base;
+  }
+
+  get aiBotDestination() {
+    return "/discourse-ai/ai-bot/conversations";
   }
 
   // Private methods
@@ -179,6 +187,7 @@ export default class FNav extends Component {
             @messagesDestination={{this.messagesDestination}}
             @searchDestination={{this.searchDestination}}
             @notificationsDestination={{this.notificationsDestination}}
+            @aiBotDestination={{this.aiBotDestination}}
             @onHomeClick={{this.homeTabRouteSwitcher}}
             @onHamburgerClick={{this.toggleHamburger}}
             @onNotificationClick={{this.navigateNotifications}}
