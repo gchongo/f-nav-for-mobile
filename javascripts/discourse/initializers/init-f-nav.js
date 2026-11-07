@@ -148,7 +148,9 @@ export default apiInitializer("1.8.0", (api) => {
       return;
     }
     const key = (button.id || "").replace("c-footer-", "");
-    if (!SECTION_FOR[key]) {
+    // only the ACTIVE view's tab summons its options menu; inactive tabs
+    // just navigate on short press and do nothing on long press
+    if (!SECTION_FOR[key] || !button.classList.contains("--active")) {
       return;
     }
     lpStart = { x: event.clientX, y: event.clientY };
