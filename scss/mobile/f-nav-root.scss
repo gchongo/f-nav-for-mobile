@@ -17,6 +17,21 @@ html.footer-nav-visible.has-full-page-chat {
   --footer-nav-height: calc(var(--f-nav-height) + env(safe-area-inset-bottom));
 }
 
+// The chat view's options trigger, relocated here from the chat's top
+// navbar by initializers/init-f-nav.js: invisible and click-through, so the
+// tab underneath keeps working; long-pressing the tab clicks it and the
+// menu anchors above the bar.
+.f-nav-options-trigger {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+}
+
 @keyframes fadeOutZ {
   0% {
     opacity: 1;
