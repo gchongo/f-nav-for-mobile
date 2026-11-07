@@ -379,6 +379,18 @@ html.has-full-page-chat {
     margin-bottom: calc(var(--f-nav-height) + env(safe-area-inset-bottom));
   }
 
+  // The switcher's text labels follow the f_nav_show_labels setting, same
+  // as the f-nav tabs: off = icons only, on = labels under the icons.
+  @if $f_nav_show_labels == "false" {
+    html.has-full-page-chat body:has(.f-nav) .c-footer .d-button-label {
+      display: none;
+    }
+  } @else {
+    html.has-full-page-chat body:has(.f-nav) .c-footer .d-button-label {
+      display: inline;
+    }
+  }
+
   // So the chat plugin hiding the header's sidebar button on phones must be undone:
   // the sidebar is where those tabs are now. For everyone, anonymous visitors too, who
   // have no bar but read public channels and leave through the sidebar's "back".
