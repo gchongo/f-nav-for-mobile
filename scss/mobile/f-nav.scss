@@ -355,7 +355,7 @@ html.has-full-page-chat {
     display: none;
   }
 
-  body:has(.f-nav .c-navbar__title) .c-footer {
+  body:has(.f-nav):has(.c-navbar__title) .c-footer {
     display: flex !important;
     position: fixed;
     top: var(--header-offset, 3.5rem);
@@ -369,7 +369,7 @@ html.has-full-page-chat {
     border-bottom: 1px solid var(--primary-low);
   }
 
-  body:has(.f-nav .c-navbar__title) .c-routes {
+  body:has(.f-nav):has(.c-navbar__title) .c-routes {
     padding-top: 3.5rem;
   }
 
