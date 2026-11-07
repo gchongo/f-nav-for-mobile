@@ -388,7 +388,7 @@ html.has-full-page-chat {
   // The chat switcher's text labels have their own toggle
   // (c_footer_show_labels): off = icons only, on = labels under the icons.
   @if $c_footer_show_labels == "false" {
-    html.has-full-page-chat body:has(.f-nav) .c-footer .d-button-label {
+    body:has(.f-nav) .c-footer .d-button-label {
       display: none;
     }
   }
