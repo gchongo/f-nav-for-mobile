@@ -355,6 +355,12 @@ html.has-full-page-chat {
     display: none;
   }
 
+  // The big "Chat" heading link at the top of the page: redundant with the
+  // sidebar and the switcher bar
+  body:has(.f-nav) .c-heading {
+    display: none;
+  }
+
   body:has(.f-nav):has(.c-navbar__title) .c-footer {
     display: flex !important;
     position: fixed;
@@ -379,15 +385,11 @@ html.has-full-page-chat {
     margin-bottom: calc(var(--f-nav-height) + env(safe-area-inset-bottom));
   }
 
-  // The switcher's text labels follow the f_nav_show_labels setting, same
-  // as the f-nav tabs: off = icons only, on = labels under the icons.
-  @if $f_nav_show_labels == "false" {
+  // The chat switcher's text labels have their own toggle
+  // (c_footer_show_labels): off = icons only, on = labels under the icons.
+  @if $c_footer_show_labels == "false" {
     html.has-full-page-chat body:has(.f-nav) .c-footer .d-button-label {
       display: none;
-    }
-  } @else {
-    html.has-full-page-chat body:has(.f-nav) .c-footer .d-button-label {
-      display: inline;
     }
   }
 

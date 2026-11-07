@@ -40,6 +40,10 @@ f_nav_show_labels:
   description: "Show tabs name under icon"
   type: bool
   default: false
+c_footer_show_labels:
+  description: "Show text labels in the chat switcher (Starred / Channels / DMs / Search)"
+  type: bool
+  default: true
 profile_extra_items:
   description: "Add items to the profile menu which appears before the Log Out button."
   type: objects
