@@ -341,12 +341,42 @@ html:not(.anon) {
   }
 }
 
-// On /chat the bar replaces the chat's own footer: its tabs (channels, direct messages,
-// threads, starred, search) are all in the chat sidebar as well. It steps aside while
-// the keyboard is up, where the composer needs the room.
+// On /chat list views (channels / direct messages / starred / search) the
+// view switcher (channels / direct messages / search) moves up to where the
+// chat's own simple top navbar was, as a fixed bar under the site header;
+// the list pads itself clear. Those simple title bars go away — their title
+// is redundant with the switcher's active tab. OPENED channels keep their
+// full navbar (back, title, star, search, threads) at the top, and the
+// switcher stays at the bottom, above the f-nav bar. The bar steps aside
+// while the keyboard is up, where the composer needs the room. Anonymous
+// visitors (no f-nav) keep the stock chat layout.
 html.has-full-page-chat {
-  body:has(.f-nav) .c-footer {
+  body:has(.f-nav) .c-navbar-container:has(.c-navbar__title) {
     display: none;
+  }
+
+  body:has(.f-nav .c-navbar__title) .c-footer {
+    display: flex !important;
+    position: fixed;
+    top: var(--header-offset, 3.5rem);
+    left: 0;
+    right: 0;
+    height: 3.5rem !important;
+    padding-bottom: 0 !important;
+    overflow: hidden;
+    z-index: 100;
+    background: var(--header_background);
+    border-bottom: 1px solid var(--primary-low);
+  }
+
+  body:has(.f-nav .c-navbar__title) .c-routes {
+    padding-top: 3.5rem;
+  }
+
+  // Opened channels: full navbar on top, switcher back at the bottom
+  body:has(.f-nav):has(.c-navbar__channel-title) .c-footer {
+    display: flex !important;
+    margin-bottom: calc(var(--f-nav-height) + env(safe-area-inset-bottom));
   }
 
   // So the chat plugin hiding the header's sidebar button on phones must be undone:
