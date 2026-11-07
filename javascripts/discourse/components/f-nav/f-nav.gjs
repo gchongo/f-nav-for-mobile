@@ -2,6 +2,7 @@ import Component from "@ember/component";
 import { service } from "@ember/service";
 import { action } from "@ember/object";
 import didInsert from "@ember/render-modifiers/modifiers/did-insert";
+import didUpdate from "@ember/render-modifiers/modifiers/did-update";
 import willDestroy from "@ember/render-modifiers/modifiers/will-destroy";
 import DiscourseURL from "discourse/lib/url";
 import DoNotDisturb from "discourse/lib/do-not-disturb";
@@ -12,6 +13,9 @@ const SCROLL_MAX = 30;
 const HIDDEN_F_NAV_CLASS = "f-nav-hidden";
 const MODAL_OPEN_CLASS = "modal-open";
 const SCROLL_LOCK_CLASS = "scroll-lock";
+// Core shortens the full-page chat by --footer-nav-height under this class (its own
+// PWA bar): on /chat this bar takes that place (scss/mobile/f-nav-root.scss).
+const CHAT_FOOTER_CLASS = "footer-nav-visible";
 
 export default class FNav extends Component {
   @service router;
@@ -25,6 +29,7 @@ export default class FNav extends Component {
   // Scroll handling
   lastScrollTop = 0;
   scrollTimeout = null;
+  setChatFooter = false;
 
   @action
   scrollListener(event) {
@@ -58,6 +63,29 @@ export default class FNav extends Component {
   @action
   removeScrollListener() {
     document.removeEventListener("scroll", this.scrollListener);
+    if (this.setChatFooter) {
+      document.documentElement.classList.remove(CHAT_FOOTER_CLASS);
+    }
+  }
+
+  get isInChat() {
+    const route = this.router.currentRouteName || "";
+    return route === "chat" || route.startsWith("chat.");
+  }
+
+  // Only ever removes the class it added, so core's PWA bar keeps its own.
+  @action
+  syncChatFooter() {
+    const classes = document.documentElement.classList;
+    if (this.isInChat) {
+      if (!classes.contains(CHAT_FOOTER_CLASS)) {
+        this.setChatFooter = true;
+        classes.add(CHAT_FOOTER_CLASS);
+      }
+    } else if (this.setChatFooter) {
+      this.setChatFooter = false;
+      classes.remove(CHAT_FOOTER_CLASS);
+    }
   }
 
   // Computed properties for visibility and states
@@ -171,6 +199,8 @@ export default class FNav extends Component {
       <div
         class="f-nav"
         {{didInsert this.setupScrollListener}}
+        {{didInsert this.syncChatFooter}}
+        {{didUpdate this.syncChatFooter this.isInChat}}
         {{willDestroy this.removeScrollListener}}
       >
         {{#each this.tabs as |tab|}}

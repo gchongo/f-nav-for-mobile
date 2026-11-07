@@ -341,9 +341,22 @@ html:not(.anon) {
   }
 }
 
-// Hide F NAV on /chat
-.has-full-page-chat {
-  .f-nav {
+// On /chat the bar replaces the chat's own footer: its tabs (channels, direct messages,
+// threads, starred, search) are all in the chat sidebar as well. It steps aside while
+// the keyboard is up, where the composer needs the room.
+html.has-full-page-chat {
+  body:has(.f-nav) .c-footer {
+    display: none;
+  }
+
+  // So the chat plugin hiding the header's sidebar button on phones must be undone:
+  // the sidebar is where those tabs are now. For everyone, anonymous visitors too, who
+  // have no bar but read public channels and leave through the sidebar's "back".
+  &.mobile-view .d-header-icons .hamburger-dropdown {
+    display: list-item;
+  }
+
+  &.keyboard-visible .f-nav {
     display: none;
   }
 }

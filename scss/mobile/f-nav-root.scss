@@ -11,6 +11,12 @@ html.footer-nav-visible {
   }
 }
 
+// Except on /chat, where f-nav.gjs sets footer-nav-visible so core leaves room for
+// this bar below the chat.
+html.footer-nav-visible.has-full-page-chat {
+  --footer-nav-height: calc(var(--f-nav-height) + env(safe-area-inset-bottom));
+}
+
 @keyframes fadeOutZ {
   0% {
     opacity: 1;
