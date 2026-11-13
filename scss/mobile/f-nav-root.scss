@@ -12,9 +12,15 @@ html.footer-nav-visible {
 }
 
 // Except on /chat, where f-nav.gjs sets footer-nav-visible so core leaves room for
-// this bar below the chat.
+// this bar below the chat. The value must NOT include env(safe-area-inset-bottom):
+// core's contract (footer-nav.scss) keeps the variable a plain height and adds the
+// inset separately in every formula (chat-height mixin, the composer wrapper's own
+// env() padding, c-footer's env() padding). The bar carries the inset in its own
+// padding-bottom, so plain f-nav-height + those formulas' env() adds up to exactly
+// the bar's real footprint — including env() here double-counted the inset in PWAs,
+// leaving phantom blank space under the chat composer and below the channel list.
 html.footer-nav-visible.has-full-page-chat {
-  --footer-nav-height: calc(var(--f-nav-height) + env(safe-area-inset-bottom));
+  --footer-nav-height: var(--f-nav-height);
 }
 
 // The chat view's options trigger, relocated here from the chat's top

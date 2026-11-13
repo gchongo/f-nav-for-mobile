@@ -379,11 +379,12 @@ html.has-full-page-chat {
     padding-top: 3.5rem;
   }
 
-  // Opened channels: full navbar on top, switcher back at the bottom
-  body:has(.f-nav):has(.c-navbar__channel-title) .c-footer {
-    display: flex !important;
-    margin-bottom: calc(var(--f-nav-height) + env(safe-area-inset-bottom));
-  }
+  // Opened channels keep their full top navbar and get no bottom switcher at
+  // all: the chat plugin mounts <ChatFooter /> only in the drawer-route list
+  // views (channels / direct messages / starred / threads / search), never
+  // inside a channel — so nothing to reposition here. The channel's height
+  // comes from the chat-height mixin, which already steps aside by
+  // --footer-nav-height under footer-nav-visible.
 
   // The chat switcher's text labels have their own toggle
   // (c_footer_show_labels): off = icons only, on = labels under the icons.
