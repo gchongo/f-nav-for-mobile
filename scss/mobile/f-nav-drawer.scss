@@ -28,7 +28,9 @@ html.mobile-view:has(.f-nav) .hamburger-panel .menu-panel.slide-in {
   overflow: hidden;
   border: 0;
   background: var(--jt-surface-raised, var(--secondary));
-  box-shadow: var(--shadow-modal);
+  // No drop shadow: the sheet rests directly on the f-nav bar and should
+  // read as one continuous surface with it, not a floating modal.
+  box-shadow: none;
 }
 
 // The grab handle of the sheet.
@@ -60,14 +62,20 @@ html.mobile-view:has(.f-nav)
 
 html.mobile-view:has(.f-nav) .hamburger-panel .menu-panel.slide-in {
   top: auto;
-  bottom: 0;
+  // Rest ON TOP of the f-nav bar — its footprint is the bar height plus the
+  // safe inset the bar itself carries — never over it: the bar stacks at
+  // z-index 299 while this panel is 1000, so any overlap would bury the bar
+  // behind the sheet's opaque background.
+  bottom: calc(var(--f-nav-height, 3.66em) + env(safe-area-inset-bottom));
   height: auto;
   max-height: min(
     var(--composer-vh, 1dvh) * 85,
-    100dvh - var(--f-nav-height, 3.66em)
+    100dvh - var(--header-offset, 3.5rem) - var(--f-nav-height, 3.66em)
   );
   padding-top: var(--space-3);
-  padding-bottom: env(safe-area-inset-bottom);
+  // The sheet ends at the bar's top edge, so the safe inset belongs to the
+  // bar alone — a flat padding here instead of another env() copy.
+  padding-bottom: var(--space-2);
   border-radius: var(--d-border-radius-large) var(--d-border-radius-large) 0 0;
 }
 
@@ -76,9 +84,12 @@ html.mobile-view:has(.f-nav) .hamburger-panel .menu-panel.slide-in {
 // Animations API slide (which outranks CSS animations) for vertical
 // keyframes, so a CSS keyframe here would never win — don't add one.
 
-// While the sheet is open, dim the page above it (core's tab-bar block does
-// the same).
+// No gray mask while the sheet is open: core's own cloak carries a 0.3 dim
+// (and the tab-bar block deepens it to 0.6), but the page must stay
+// undimmed behind the sheet. The cloak element itself stays — full height —
+// as the invisible click-catcher, so tapping outside still closes the
+// sheet.
 html.mobile-view:has(.f-nav):has(.hamburger-panel .menu-panel.slide-in) .header-cloak {
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: transparent;
 }
