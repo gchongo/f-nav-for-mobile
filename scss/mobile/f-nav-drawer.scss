@@ -71,21 +71,10 @@ html.mobile-view:has(.f-nav) .hamburger-panel .menu-panel.slide-in {
   border-radius: var(--d-border-radius-large) var(--d-border-radius-large) 0 0;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  html.mobile-view:has(.f-nav) .hamburger-panel .menu-panel.slide-in {
-    animation: f-nav-sheet-up 200ms ease-out;
-  }
-
-  @keyframes f-nav-sheet-up {
-    from {
-      transform: translate3d(0, 100%, 0);
-    }
-
-    to {
-      transform: translate3d(0, 0, 0);
-    }
-  }
-}
+// The open/close motion is owned by the JS side: initializers/
+// init-sheet-up-animation.js swaps core's hard-coded horizontal Web
+// Animations API slide (which outranks CSS animations) for vertical
+// keyframes, so a CSS keyframe here would never win — don't add one.
 
 // While the sheet is open, dim the page above it (core's tab-bar block does
 // the same).
