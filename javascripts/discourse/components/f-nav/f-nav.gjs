@@ -54,11 +54,12 @@ export default class FNav extends Component {
     });
   }
 
+  // The scroll listener that hid this bar (and the header) after 30px of
+  // scrolling down is intentionally NOT registered: the bar must stay visible
+  // at every scroll position, not just at the top of the page. The listener
+  // code below is kept for reference / upstream merges, it just never runs.
   @action
-  setupScrollListener() {
-    this.lastScrollTop = window.scrollY;
-    document.addEventListener("scroll", this.scrollListener, { passive: true });
-  }
+  setupScrollListener() {}
 
   @action
   removeScrollListener() {
