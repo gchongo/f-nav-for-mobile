@@ -1,0 +1,95 @@
+// Upward hamburger sheet on mobile — mirrors core's own mobile-tab-bar drawer
+// block (Discourse 2026.11) but gated on the f-nav bar via :has() instead of
+// core's html.mobile-tab-bar-visible class. Nothing sets that class on this
+// site (the f-nav component replaces core's tab bar), so without this block
+// the hamburger drawer keeps core's plain left slide-in and never pops up
+// from above the bar.
+//
+// Surfaces prefer the jt-* tokens with core fallbacks: the core palette stays
+// light while the jt-* tokens carry the site's dark look, and core's original
+// block hard-codes var(--secondary), which is white here.
+
+html.mobile-view:has(.f-nav) .menu-panel.slide-in,
+html.mobile-view:has(.f-nav) .header-cloak {
+  height: calc(100dvh - var(--f-nav-height, 3.66em) - env(safe-area-inset-bottom));
+}
+
+html.mobile-view:has(.f-nav) .menu-panel.slide-in {
+  box-shadow: none;
+}
+
+html.mobile-view:has(.f-nav) .hamburger-panel .menu-panel.slide-in {
+  right: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: none;
+  overflow: hidden;
+  border: 0;
+  background: var(--jt-surface-raised, var(--secondary));
+  box-shadow: var(--shadow-modal);
+}
+
+// The grab handle of the sheet.
+html.mobile-view:has(.f-nav) .hamburger-panel .menu-panel.slide-in::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  width: 15vw;
+  max-width: 100px;
+  height: 5px;
+  border-radius: 10px;
+  background: var(--jt-text-subtle, var(--primary-medium));
+  transform: translateX(-50%);
+  top: 2.5px;
+}
+
+html.mobile-view:has(.f-nav) .hamburger-panel .menu-panel.slide-in .panel-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  height: auto;
+}
+
+html.mobile-view:has(.f-nav)
+  .hamburger-panel
+  .menu-panel.slide-in
+  .panel-body-contents {
+  min-height: 0;
+}
+
+html.mobile-view:has(.f-nav) .hamburger-panel .menu-panel.slide-in {
+  top: auto;
+  bottom: 0;
+  height: auto;
+  max-height: min(
+    var(--composer-vh, 1dvh) * 85,
+    100dvh - var(--f-nav-height, 3.66em)
+  );
+  padding-top: var(--space-3);
+  padding-bottom: env(safe-area-inset-bottom);
+  border-radius: var(--d-border-radius-large) var(--d-border-radius-large) 0 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html.mobile-view:has(.f-nav) .hamburger-panel .menu-panel.slide-in {
+    animation: f-nav-sheet-up 200ms ease-out;
+  }
+
+  @keyframes f-nav-sheet-up {
+    from {
+      transform: translate3d(0, 100%, 0);
+    }
+
+    to {
+      transform: translate3d(0, 0, 0);
+    }
+  }
+}
+
+// While the sheet is open, dim the page above it (core's tab-bar block does
+// the same).
+html.mobile-view:has(.f-nav):has(.hamburger-panel .menu-panel.slide-in) .header-cloak {
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+}
