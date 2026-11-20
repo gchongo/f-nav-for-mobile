@@ -31,6 +31,11 @@ html.mobile-view:has(.f-nav) .hamburger-panel .menu-panel.slide-in {
   // No drop shadow: the sheet rests directly on the f-nav bar and should
   // read as one continuous surface with it, not a floating modal.
   box-shadow: none;
+  // Below the f-nav bar (z-index 299), so the sheet rises FROM BEHIND the
+  // bar instead of sweeping over it — the bar stays visible and clickable
+  // even during the 200ms slide-up. The sheet never overlaps the bar at
+  // rest (it stops at its top edge), so this only matters mid-animation.
+  z-index: 298;
 }
 
 // The grab handle of the sheet.
