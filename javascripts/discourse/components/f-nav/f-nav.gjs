@@ -17,12 +17,34 @@ const SCROLL_LOCK_CLASS = "scroll-lock";
 // PWA bar): on /chat this bar takes that place (scss/mobile/f-nav-root.scss).
 const CHAT_FOOTER_CLASS = "footer-nav-visible";
 
+// With the bar lifted above the cloak, the ☰ tab is the pointer target when
+// the drawer is open — and core's outside-click handler tears the drawer
+// wrapper down INSTANTLY (no animation) for any outside target that is not
+// the cloak itself. Block that pointerdown from leaving the bar: the tab's
+// click handler then closes through the cloak's animated dismiss path
+// instead (see toggleHamburger), and the double-fire (instant close + our
+// toggle re-opening it) is gone.
+document.addEventListener(
+  "pointerdown",
+  (e) => {
+    if (!document.querySelector(".hamburger-panel .menu-panel.slide-in")) {
+      return;
+    }
+    const tab = e.target.closest?.(".f-nav .tab");
+    if (tab && tab.querySelector('use[href="#jt-menu"]')) {
+      e.stopPropagation();
+    }
+  },
+  true
+);
+
 export default class FNav extends Component {
   @service router;
   @service currentUser;
   @service site;
   @service siteSettings;
   @service topicTrackingState;
+  @service sidebarState;
 
   tabs = settings.f_nav_tabs;
 
@@ -172,6 +194,32 @@ export default class FNav extends Component {
 
   @action
   toggleHamburger() {
+    if (document.querySelector(".hamburger-panel .menu-panel.slide-in")) {
+      // Closing. Core only ANIMATES the dismiss when the closing pointer
+      // event lands on the cloak itself — any other outside target gets an
+      // instant teardown. Replay the pointer sequence on the cloak so the
+      // second tap closes with the same slide-down animation as the open.
+      const cloak = document.querySelector(".header-cloak");
+      if (cloak) {
+        const opts = {
+          bubbles: true,
+          cancelable: true,
+          composed: true,
+          pointerId: 1,
+          pointerType: "touch",
+          isPrimary: true,
+        };
+        cloak.dispatchEvent(new PointerEvent("pointerdown", opts));
+        cloak.dispatchEvent(new PointerEvent("pointerup", opts));
+        cloak.dispatchEvent(new MouseEvent("click", opts));
+        return;
+      }
+    }
+    // Chat pages must show the CHAT panel in the drawer (Search chat /
+    // channels / DMs), like core's own hamburger does there — core's
+    // route-based panel switch does not fire for this programmatic open,
+    // so pick the panel explicitly. Forum pages get the main panel back.
+    this.sidebarState?.setPanel?.(this.isInChat ? "chat" : "main");
     this.#handleElementClick("toggle-hamburger-menu");
   }
 
