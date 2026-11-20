@@ -98,3 +98,13 @@ html.mobile-view:has(.f-nav):has(.hamburger-panel .menu-panel.slide-in) .header-
   height: 100%;
   background-color: transparent;
 }
+
+// The sheet and its cloak both live inside .d-header-wrap (sticky,
+// z-index 1000) — a stacking context that as a WHOLE paints above the bar,
+// so no z-index inside it can stop the sheet from sweeping over the bar
+// while it rises. While the sheet is open, lift the bar above that entire
+// context: it then stays visible and clickable even mid-animation, and the
+// sheet rises from behind it.
+html.mobile-view:has(.f-nav):has(.hamburger-panel .menu-panel.slide-in) .f-nav {
+  z-index: 1001;
+}
