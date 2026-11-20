@@ -27,6 +27,12 @@ export default {
     }
     Element.prototype.animate = function (keyframes, options) {
       try {
+        // Chat pages keep core's own horizontal slide: the ☰ drawer there is
+        // core's full-height left drawer showing the chat panel, and core's
+        // left-to-right motion is the wanted one.
+        if (document.body.classList.contains("has-full-page-chat")) {
+          return origAnimate.call(this, keyframes, options);
+        }
         const cl = this.classList;
         if (
           cl &&
