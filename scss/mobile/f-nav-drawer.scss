@@ -80,7 +80,8 @@ html.mobile-view:has(.f-nav) .hamburger-panel .menu-panel.slide-in {
   height: auto !important;
   max-height: min(
     var(--composer-vh, 1dvh) * 85,
-    100dvh - var(--f-nav-top, 3.5rem) - var(--f-nav-height, 3.66em)
+    100dvh - var(--f-nav-top, 3.5rem) - var(--f-nav-height, 3.66em) -
+    env(safe-area-inset-bottom)
   ) !important;
   padding-top: var(--space-3);
   // The sheet ends at the bar's top edge, so the safe inset belongs to the

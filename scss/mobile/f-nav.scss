@@ -284,6 +284,13 @@ html:not(.anon) {
       height: auto !important;
     }
 
+    // On chat list views the switcher sits under the navbar — the composer
+    // must clear it too (the switcher renders ≈3.5rem + borders, hence the
+    // 4px cushion).
+    body:has(.f-nav):has(.c-navbar__title) #reply-control:not(.closed) {
+      top: calc(var(--f-nav-top, 3.5rem) + 3.5rem + 4px) !important;
+    }
+
     #reply-control.closed {
       visibility: hidden;
     }
@@ -365,7 +372,7 @@ html.has-full-page-chat {
   }
 
   body:has(.f-nav):has(.c-navbar__title) .modal-container .d-modal.chat-modal-new-message .d-modal__container {
-    top: calc(var(--f-nav-top, 3.5rem) + 3.5rem) !important;
+    top: calc(var(--f-nav-top, 3.5rem) + 3.5rem + 4px) !important;
   }
 
   // Opened channels keep their full top navbar and get no bottom switcher at
