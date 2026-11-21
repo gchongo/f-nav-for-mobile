@@ -297,10 +297,11 @@ export default class FNav extends Component {
     syncHtmlState();
   }
 
-  // Chat navbar: the back-to-forum link renders the system logo image — the
-  // same markup core's own header logo uses (the logo-mobile classes and the
-  // light/dark picture), so the image and its size are identical to the
-  // homepage header's.
+  // Chat navbar: the back-to-forum link renders the system logo image (the
+  // same logo core's own header logo uses), with the light/dark asset
+  // swapped per the interface color mode: light mode shows the light logo,
+  // dark mode shows the dark logo. Re-synced by the observer flow on every
+  // palette switch.
   @action
   setupChatNavbarLogo() {
     if (!this.isInChat) return;
@@ -323,11 +324,35 @@ export default class FNav extends Component {
     if (!logo) return;
     link.dataset.fnavLogo = "true";
     link.classList.add("f-nav-chat-logo");
-    link.innerHTML = `<picture>${
-      logoDark && logoDark !== logo
-        ? `<source media="all" srcset="${logoDark}">`
-        : ""
-    }<img class="logo-mobile" src="${logo}" alt=""></picture>`;
+    const darkMode = !!this.#interfaceColor()?.colorModeIsDark;
+    link.innerHTML = `<img class="logo-mobile" src="${
+      darkMode && logoDark ? logoDark : logo
+    }" alt="">`;
+  }
+
+  // Keeps the chat navbar logo's asset in step with the color mode: the
+  // palette switch doesn't reload the page, so the observer flow re-runs
+  // this and swaps the light/dark asset per the current mode.
+  @action
+  syncChatNavbarLogoMode() {
+    const img = document.querySelector('.back-to-forum .logo-mobile');
+    if (!img) return;
+    let logo = null,
+      logoDark = null;
+    try {
+      const pre = document.getElementById("data-preloaded");
+      const data = JSON.parse(pre.textContent);
+      let ss = data.siteSettings;
+      if (typeof ss === "string") {
+        ss = JSON.parse(ss);
+      }
+      logo = ss?.logo || ss?.site_logo_url || null;
+      logoDark = ss?.logo_dark || ss?.site_logo_dark_url || logo || null;
+    } catch (e) {
+      return;
+    }
+    const darkMode = !!this.#interfaceColor()?.colorModeIsDark;
+    img.src = darkMode && logoDark ? logoDark : logo || img.src;
   }
 
   #interfaceColor() {
@@ -343,6 +368,7 @@ export default class FNav extends Component {
     measureTopBars();
     syncHtmlState();
     this.setupChatNavbarLogo();
+    this.syncChatNavbarLogoMode();
     if (!this.isInChat) {
       document.getElementById("f-nav-chat-panel-trigger")?.remove();
       return;
