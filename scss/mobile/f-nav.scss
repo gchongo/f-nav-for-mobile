@@ -344,11 +344,8 @@ html.has-full-page-chat {
       object-fit: contain;
     }
 
-    // Dark mode: the logo asset is a monochrome glyph — invert it to the
-    // white variant (matches the header logo's dark palette).
-    .f-nav-chat-logo-img.dark {
-      filter: invert(1);
-    }
+    // Dark mode uses its own logo asset (site_mobile_logo_dark_url — the
+    // swap logic in f-nav.gjs picks it per color mode), no filter needed.
   }
 
   body:has(.f-nav):has(.c-navbar__title) .c-footer {

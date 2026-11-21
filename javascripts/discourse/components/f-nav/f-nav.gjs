@@ -297,28 +297,72 @@ export default class FNav extends Component {
     syncHtmlState();
   }
 
-  // Chat navbar: the back-to-forum link renders the site's own logo (read
-  // from the favicon — per-site safe: each site's favicon is its own logo)
-  // instead of the arrow + "Forum" text. The logo follows the color mode:
-  // the interface-color service's colorModeIsDark drives the dark class (the
-  // observer flow re-syncs on every palette switch), and the CSS inverts the
-  // monochrome logo for dark mode.
+  // Chat navbar: the back-to-forum link renders the site's own MOBILE logo
+  // (light/dark variants from the preloaded site settings — per-site safe,
+  // follows the color mode) instead of the arrow + "Forum" text.
   @action
   setupChatNavbarLogo() {
     if (!this.isInChat) return;
     const link = document.querySelector(".back-to-forum");
-    if (!link || link.dataset.fnavLogo) return;
-    const favicon = document
-      .querySelector('link[rel="shortcut icon"], link[rel="icon"]')
-      ?.getAttribute("href");
-    if (!favicon) return;
+    if (!link || link.dataset.fnavLogo) {
+      this.syncChatNavbarLogoMode();
+      return;
+    }
+    let light = null,
+      dark = null;
+    try {
+      const pre = document.getElementById("data-preloaded");
+      const data = JSON.parse(pre.textContent);
+      let ss = data.siteSettings;
+      if (typeof ss === "string") {
+        ss = JSON.parse(ss);
+      }
+      light = ss?.site_mobile_logo_url || ss?.site_logo_small_url || null;
+      dark =
+        ss?.site_mobile_logo_dark_url ||
+        ss?.site_logo_small_dark_url ||
+        light ||
+        null;
+    } catch (e) {
+      // no preloaded data — leave the link as core rendered it
+    }
+    if (!light) return;
     link.dataset.fnavLogo = "true";
     link.classList.add("f-nav-chat-logo");
     const interfaceColor = this.#interfaceColor();
     const dark = !!interfaceColor?.colorModeIsDark;
     link.innerHTML = `<img class="f-nav-chat-logo-img${
       dark ? " dark" : ""
-    }" src="${favicon}" alt="">`;
+    }" src="${dark && dark !== light ? dark : light}" alt="">`;
+  }
+
+  // Re-syncs the chat navbar logo's src/class when the color mode flips (the
+  // palette switch doesn't reload the page — the observer flow re-runs this).
+  @action
+  syncChatNavbarLogoMode() {
+    const img = document.querySelector(".f-nav-chat-logo-img");
+    if (!img) return;
+    let light = null,
+      dark = null;
+    try {
+      const pre = document.getElementById("data-preloaded");
+      const data = JSON.parse(pre.textContent);
+      let ss = data.siteSettings;
+      if (typeof ss === "string") {
+        ss = JSON.parse(ss);
+      }
+      light = ss?.site_mobile_logo_url || ss?.site_logo_small_url || null;
+      dark =
+        ss?.site_mobile_logo_dark_url ||
+        ss?.site_logo_small_dark_url ||
+        light ||
+        null;
+    } catch (e) {
+      return;
+    }
+    const darkMode = !!this.#interfaceColor()?.colorModeIsDark;
+    img.src = darkMode ? dark || light : light || dark;
+    img.classList.toggle("dark", !!darkMode);
   }
 
   #interfaceColor() {
@@ -334,12 +378,7 @@ export default class FNav extends Component {
     measureTopBars();
     syncHtmlState();
     this.setupChatNavbarLogo();
-    // keep the chat navbar logo's dark class in step with the color mode
-    const chatLogoImg = document.querySelector('.f-nav-chat-logo-img');
-    if (chatLogoImg) {
-      const interfaceColor = this.#interfaceColor();
-      chatLogoImg.classList.toggle('dark', !!interfaceColor?.colorModeIsDark);
-    }
+    this.syncChatNavbarLogoMode();
     if (!this.isInChat) {
       document.getElementById("f-nav-chat-panel-trigger")?.remove();
       return;
