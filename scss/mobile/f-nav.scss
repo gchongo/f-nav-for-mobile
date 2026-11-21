@@ -271,10 +271,17 @@ html:not(.anon) {
         z-index: 100;
       }
     }
-  
-    // Reply draft and Docked Composer
-    #reply-control.draft,
-    #reply-control.saving,
+
+    // The full-page topic composer: below the header (the logo bar), above
+    // the f-nav bar — core's mobile composer is inset-0 and covers both.
+    #reply-control {
+      top: var(--header-offset, 3.5rem);
+      bottom: calc(var(--f-nav-height, 3.66em) + env(safe-area-inset-bottom));
+      height: auto;
+    }
+
+    // Docked Composer (the draft strip rides inside the constrained
+    // #reply-control box now, so only the docked composer needs the lift)
     .docked-composer.ai-bot-docked-composer:not(.docked-composer--at-bottom) {
       transform: translateY(calc(var(--f-nav-height) * -1));
       transition: transform 0.1s linear;
