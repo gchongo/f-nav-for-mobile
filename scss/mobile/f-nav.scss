@@ -331,20 +331,25 @@ html.has-full-page-chat {
     display: none;
   }
 
-  // The back-to-forum link, re-rendered by f-nav.gjs as the site logo (the
-  // swap reads the logo from the site's favicon — per-site safe).
+  // The back-to-forum link, re-rendered by f-nav.gjs to reference the
+  // system logo image (the same markup core's header logo uses). The logo
+  // img gets the same size constraints as the homepage header's logo
+  // (104×38 rendered).
   body:has(.f-nav) .back-to-forum {
     display: flex;
     align-items: center;
     padding: 0;
 
-    // The logo img renders at its natural size — the same as the homepage
-    // header's logo (no sizing, no cropping). The <picture> swap in
-    // f-nav.gjs picks the dark/light asset per the site's own markup.
-
-    // Dark mode uses its own logo asset (site_mobile_logo_dark_url — the
-    // swap logic in f-nav.gjs picks it per color mode), no filter needed.
+    .logo-mobile,
+    .f-nav-chat-logo-img {
+      height: 38px;
+      width: auto;
+      object-fit: contain;
+    }
   }
+
+  // Dark mode uses its own logo asset (logo_dark — the swap logic in
+  // f-nav.gjs picks it per color mode), no filter needed.
 
   body:has(.f-nav):has(.c-navbar__title) .c-footer {
     display: flex !important;

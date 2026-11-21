@@ -297,9 +297,10 @@ export default class FNav extends Component {
     syncHtmlState();
   }
 
-  // Chat navbar: the back-to-forum link renders the site's OWN header logo —
-  // the exact <picture> markup the homepage header uses (the dark source +
-  // the light fallback), so the same image renders at the same size.
+  // Chat navbar: the back-to-forum link renders the system logo image — the
+  // same markup core's own header logo uses (the logo-mobile classes and the
+  // light/dark picture), so the image and its size are identical to the
+  // homepage header's.
   @action
   setupChatNavbarLogo() {
     if (!this.isInChat) return;
@@ -326,7 +327,7 @@ export default class FNav extends Component {
       logoDark && logoDark !== logo
         ? `<source media="all" srcset="${logoDark}">`
         : ""
-    }<img class="f-nav-chat-logo-img" src="${logo}" alt=""></picture>`;
+    }<img class="logo-mobile" src="${logo}" alt=""></picture>`;
   }
 
   #interfaceColor() {
