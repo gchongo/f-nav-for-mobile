@@ -17,21 +17,19 @@ const SCROLL_LOCK_CLASS = "scroll-lock";
 // PWA bar): on /chat this bar takes that place (scss/mobile/f-nav-root.scss).
 const CHAT_FOOTER_CLASS = "footer-nav-visible";
 
-// With the bar lifted above the cloak, the ☰ tab is the pointer target when
-// the drawer is open — and core's outside-click handler tears the drawer
-// wrapper down INSTANTLY (no animation) for any outside target that is not
-// the cloak itself. Block that pointerdown from leaving the bar: the tab's
-// click handler then closes through the cloak's animated dismiss path
-// instead (see toggleHamburger), and the double-fire (instant close + our
-// toggle re-opening it) is gone.
+// With the bar lifted above the cloak, the chat-panel trigger is the pointer
+// target when the chat drawer is open — and core's outside-click handler
+// tears the drawer wrapper down INSTANTLY (no animation) for any outside
+// target that is not the cloak itself. Block that pointerdown from leaving
+// the trigger: its click handler then closes through the cloak's animated
+// dismiss path instead (see toggleChatPanel).
 document.addEventListener(
   "pointerdown",
   (e) => {
     if (!document.querySelector(".hamburger-panel .menu-panel.slide-in")) {
       return;
     }
-    const tab = e.target.closest?.(".f-nav .tab");
-    if (tab && tab.querySelector('use[href="#jt-menu"]')) {
+    if (e.target.closest?.("#f-nav-chat-panel-trigger")) {
       e.stopPropagation();
     }
   },
@@ -194,6 +192,18 @@ export default class FNav extends Component {
 
   @action
   toggleHamburger() {
+    // The site hamburger: always the main (forum) panel. The chat panel
+    // drawer has its own trigger on chat pages (see toggleChatPanel).
+    this.sidebarState?.setPanel?.("main");
+    this.#handleElementClick("toggle-hamburger-menu");
+  }
+
+  // The chat-pages drawer trigger: a dedicated button in the chat switcher
+  // (nav.c-footer, before the Starred tab) that opens the chat panel drawer
+  // (Search chat / Starred channels / Channels / DMs / Live rooms) — kept
+  // separate from the site hamburger, which always shows the forum panel.
+  @action
+  toggleChatPanel() {
     if (document.querySelector(".hamburger-panel .menu-panel.slide-in")) {
       // Closing. Core only ANIMATES the dismiss when the closing pointer
       // event lands on the cloak itself — any other outside target gets an
@@ -215,50 +225,73 @@ export default class FNav extends Component {
         return;
       }
     }
-    // Chat pages must show the CHAT panel (Search chat / Starred channels /
-    // Channels / DMs), like core's own hamburger does there. core's
-    // setPanel('chat') cannot be used here: its restorePreviousState runs
-    // setCombinedMode, which slams the requested panel back to main (combined
-    // = forum and chat sections mixed). Set the separated mode and the chat
-    // panel key directly instead. Forum pages get the main panel back.
-    if (this.isInChat) {
-      this.sidebarState?.setSeparatedMode?.();
-      this.sidebarState._requestedPanelKey = "chat";
-      // The sidebar sections remember their collapsed state per device — a
-      // collapsed section renders only its header (a › chevron, no rows), so
-      // the index looks empty. The chat index must show every channel/DM
-      // row, so force all its sections expanded on every open.
-      for (const id of [
-        "chat-starred-channels",
-        "chat-channels",
-        "chat-dms",
-        "chat-live-rooms",
-      ]) {
-        try {
-          if (this.sidebarState.isSectionCollapsed?.(id)) {
-            this.sidebarState.expandSection?.(id);
-          }
-        } catch (e) {
-          // section ids can vary between core versions
+    // Opening: the chat panel, separated (its sections only), with every
+    // section expanded — the sidebar sections remember collapsed state per
+    // device, and a collapsed section renders no rows.
+    this.sidebarState?.setSeparatedMode?.();
+    this.sidebarState._requestedPanelKey = "chat";
+    for (const id of ["chat-starred-channels", "chat-channels", "chat-dms"]) {
+      try {
+        if (this.sidebarState.isSectionCollapsed?.(id)) {
+          this.sidebarState.expandSection?.(id);
         }
+      } catch (e) {
+        // section ids can vary between core versions
       }
-      // Some sections (e.g. Live rooms) render collapsed with a header the
-      // state layer doesn't track — and the drawer body mounts a beat after
-      // the open. Two deferred passes click any header still collapsed once
-      // the drawer has rendered.
-      const expandStillCollapsed = () => {
-        document
-          .querySelectorAll(
-            ".hamburger-panel .sidebar-section-wrapper:not(.sidebar-section--expanded) .sidebar-section-header"
-          )
-          .forEach((h) => h.click());
-      };
-      setTimeout(expandStillCollapsed, 400);
-      setTimeout(expandStillCollapsed, 900);
-    } else {
-      this.sidebarState?.setPanel?.("main");
     }
     this.#handleElementClick("toggle-hamburger-menu");
+    // Sections can still render collapsed for ids the state layer doesn't
+    // track (Live rooms = live-rooms-chat) — expand them from the DOM once
+    // the drawer rendered.
+    const expandStillCollapsed = () => {
+      document
+        .querySelectorAll(
+          ".hamburger-panel .sidebar-section-wrapper:not(.sidebar-section--expanded) .sidebar-section-header"
+        )
+        .forEach((h) => h.click());
+    };
+    setTimeout(expandStillCollapsed, 400);
+    setTimeout(expandStillCollapsed, 900);
+  }
+
+  @action
+  ensureChatPanelTrigger() {
+    if (!this.isInChat) {
+      document.getElementById("f-nav-chat-panel-trigger")?.remove();
+      return;
+    }
+    const footer = document.querySelector("nav.c-footer");
+    if (!footer || document.getElementById("f-nav-chat-panel-trigger")) {
+      return;
+    }
+    const btn = document.createElement("button");
+    btn.id = "f-nav-chat-panel-trigger";
+    btn.type = "button";
+    btn.className = "btn btn-icon-text btn-transparent c-footer__item";
+    btn.setAttribute("aria-label", "Chat sections");
+    btn.title = "Chat sections";
+    btn.innerHTML =
+      '<svg class="fa d-icon d-icon-bars svg-icon fa-width-auto svg-string" width="1em" height="1em" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><use href="#jt-menu"></use></svg><span class="d-button-label">Chat</span>';
+    btn.addEventListener("click", this.toggleChatPanel);
+    footer.prepend(btn);
+  }
+
+  @action
+  setupChatPanelTrigger() {
+    this._footerObserver = new MutationObserver(() => {
+      this.ensureChatPanelTrigger();
+    });
+    this._footerObserver.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
+    this.ensureChatPanelTrigger();
+  }
+
+  @action
+  teardownChatPanelTrigger() {
+    this._footerObserver?.disconnect();
+    document.getElementById("f-nav-chat-panel-trigger")?.remove();
   }
 
   @action
@@ -287,8 +320,10 @@ export default class FNav extends Component {
         class="f-nav"
         {{didInsert this.setupScrollListener}}
         {{didInsert this.syncChatFooter}}
+        {{didInsert this.setupChatPanelTrigger}}
         {{didUpdate this.syncChatFooter this.isInChat}}
         {{willDestroy this.removeScrollListener}}
+        {{willDestroy this.teardownChatPanelTrigger}}
       >
         {{#each this.tabs as |tab|}}
           <FNavItem
