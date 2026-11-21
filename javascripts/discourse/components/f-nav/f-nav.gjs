@@ -343,7 +343,6 @@ export default class FNav extends Component {
     measureTopBars();
     syncHtmlState();
     this.setupChatNavbarLogo();
-    this.syncChatNavbarLogoMode();
     if (!this.isInChat) {
       document.getElementById("f-nav-chat-panel-trigger")?.remove();
       return;
