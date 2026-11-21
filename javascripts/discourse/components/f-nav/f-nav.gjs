@@ -9,10 +9,6 @@ import DoNotDisturb from "discourse/lib/do-not-disturb";
 import EmbedMode from "discourse/lib/embed-mode";
 import FNavItem from "./f-nav-item";
 
-const SCROLL_MAX = 30;
-const HIDDEN_F_NAV_CLASS = "f-nav-hidden";
-const MODAL_OPEN_CLASS = "modal-open";
-const SCROLL_LOCK_CLASS = "scroll-lock";
 // Core shortens the full-page chat by --footer-nav-height under this class (its own
 // PWA bar): on /chat this bar takes that place (scss/mobile/f-nav-root.scss).
 const CHAT_FOOTER_CLASS = "footer-nav-visible";
@@ -46,44 +42,14 @@ export default class FNav extends Component {
 
   tabs = settings.f_nav_tabs;
 
-  // Scroll handling
-  lastScrollTop = 0;
-  scrollTimeout = null;
   setChatFooter = false;
 
+  // The scroll listener that used to hide this bar (and the header) after
+  // 30px of scrolling down was removed: the bar stays visible at every
+  // scroll position. The matching body.f-nav-hidden CSS rules were removed
+  // from scss/mobile/f-nav.scss in the same cleanup.
   @action
-  scrollListener(event) {
-    if (
-      document.documentElement.classList.contains(MODAL_OPEN_CLASS) ||
-      document.documentElement.classList.contains(SCROLL_LOCK_CLASS)
-    ) {
-      return;
-    }
-
-    if (this.scrollTimeout) {
-      return;
-    }
-
-    this.scrollTimeout = requestAnimationFrame(() => {
-      const currentScroll = window.scrollY;
-      const shouldHide = this.lastScrollTop < currentScroll && currentScroll > SCROLL_MAX;
-
-      document.body.classList.toggle(HIDDEN_F_NAV_CLASS, shouldHide);
-      this.lastScrollTop = currentScroll;
-      this.scrollTimeout = null;
-    });
-  }
-
-  // The scroll listener that hid this bar (and the header) after 30px of
-  // scrolling down is intentionally NOT registered: the bar must stay visible
-  // at every scroll position, not just at the top of the page. The listener
-  // code below is kept for reference / upstream merges, it just never runs.
-  @action
-  setupScrollListener() {}
-
-  @action
-  removeScrollListener() {
-    document.removeEventListener("scroll", this.scrollListener);
+  teardownChatFooter() {
     if (this.setChatFooter) {
       document.documentElement.classList.remove(CHAT_FOOTER_CLASS);
     }
@@ -318,11 +284,10 @@ export default class FNav extends Component {
     {{#if this.shouldShowNav}}
       <div
         class="f-nav"
-        {{didInsert this.setupScrollListener}}
         {{didInsert this.syncChatFooter}}
         {{didInsert this.setupChatPanelTrigger}}
         {{didUpdate this.syncChatFooter this.isInChat}}
-        {{willDestroy this.removeScrollListener}}
+        {{willDestroy this.teardownChatFooter}}
         {{willDestroy this.teardownChatPanelTrigger}}
       >
         {{#each this.tabs as |tab|}}

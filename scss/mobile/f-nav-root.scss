@@ -38,16 +38,6 @@ html.footer-nav-visible.has-full-page-chat {
   background: none;
 }
 
-@keyframes fadeOutZ {
-  0% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-    z-index: -1;
-  }
-}
-
 @import "custom-header";
 @import "f-nav";
 @import "messages-modal";
