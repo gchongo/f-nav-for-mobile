@@ -13,6 +13,25 @@ import FNavItem from "./f-nav-item";
 // PWA bar): on /chat this bar takes that place (scss/mobile/f-nav-root.scss).
 const CHAT_FOOTER_CLASS = "footer-nav-visible";
 
+// The html state classes the drawer CSS hangs off (plain class gates — no
+// :has(), which has shown rendering differences on some mobile WebKits):
+// f-nav-active = the bar is rendered; f-nav-drawer-open = the hamburger
+// drawer is open (either panel); f-nav-switcher-top = the chat switcher is
+// docked under the navbar (list views). Re-measured on every DOM mutation,
+// route change and viewport resize.
+const syncHtmlState = () => {
+  const html = document.documentElement;
+  html.classList.toggle("f-nav-active", !!document.querySelector(".f-nav"));
+  html.classList.toggle(
+    "f-nav-drawer-open",
+    !!document.querySelector(".hamburger-panel .menu-panel.slide-in")
+  );
+  html.classList.toggle(
+    "f-nav-switcher-top",
+    !!document.querySelector(".c-navbar__title")
+  );
+};
+
 // With the bar lifted above the cloak, the bar's own triggers (the ☰ tab and
 // the chat-panel button) are the pointer targets when a drawer is open — and
 // core's outside-click handler tears the drawer wrapper down INSTANTLY (no
@@ -93,6 +112,7 @@ export default class FNav extends Component {
   @action
   syncChatFooter() {
     measureTopBars();
+    syncHtmlState();
     const classes = document.documentElement.classList;
     if (this.isInChat) {
       if (!classes.contains(CHAT_FOOTER_CLASS)) {
@@ -207,6 +227,7 @@ export default class FNav extends Component {
         cloak.dispatchEvent(new PointerEvent("pointerdown", opts));
         cloak.dispatchEvent(new PointerEvent("pointerup", opts));
         cloak.dispatchEvent(new MouseEvent("click", opts));
+        syncHtmlState();
         return;
       }
     }
@@ -214,6 +235,7 @@ export default class FNav extends Component {
     // chat panel drawer has its own trigger on chat pages (toggleChatPanel).
     this.sidebarState?.setPanel?.("main");
     this.#handleElementClick("toggle-hamburger-menu");
+    syncHtmlState();
   }
 
   // The chat-pages drawer trigger: a dedicated button in the chat switcher
@@ -240,6 +262,7 @@ export default class FNav extends Component {
         cloak.dispatchEvent(new PointerEvent("pointerdown", opts));
         cloak.dispatchEvent(new PointerEvent("pointerup", opts));
         cloak.dispatchEvent(new MouseEvent("click", opts));
+        syncHtmlState();
         return;
       }
     }
@@ -270,6 +293,7 @@ export default class FNav extends Component {
     };
     setTimeout(expandStillCollapsed, 400);
     setTimeout(expandStillCollapsed, 900);
+    syncHtmlState();
   }
 
   // Chat navbar: the back-to-forum link renders the site's own logo (read
@@ -292,6 +316,7 @@ export default class FNav extends Component {
   @action
   ensureChatPanelTrigger() {
     measureTopBars();
+    syncHtmlState();
     this.setupChatNavbarLogo();
     if (!this.isInChat) {
       document.getElementById("f-nav-chat-panel-trigger")?.remove();

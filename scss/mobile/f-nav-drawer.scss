@@ -14,16 +14,16 @@
 // light while the jt-* tokens carry the site's dark look, and core's original
 // block hard-codes var(--secondary), which is white here.
 
-html.mobile-view:has(.f-nav) .menu-panel.slide-in,
-html.mobile-view:has(.f-nav) .header-cloak {
+html.f-nav-active .menu-panel.slide-in,
+html.f-nav-active .header-cloak {
   height: calc(100dvh - var(--f-nav-height, 3.66em) - env(safe-area-inset-bottom)) !important;
 }
 
-html.mobile-view:has(.f-nav) .menu-panel.slide-in {
+html.f-nav-active .menu-panel.slide-in {
   box-shadow: none;
 }
 
-html.mobile-view:has(.f-nav) .hamburger-panel .menu-panel.slide-in {
+html.f-nav-active .hamburger-panel .menu-panel.slide-in {
   right: 0 !important;
   left: 0 !important;
   display: flex !important;
@@ -44,7 +44,7 @@ html.mobile-view:has(.f-nav) .hamburger-panel .menu-panel.slide-in {
 }
 
 // The grab handle of the sheet.
-html.mobile-view:has(.f-nav) .hamburger-panel .menu-panel.slide-in::before {
+html.f-nav-active .hamburger-panel .menu-panel.slide-in::before {
   content: "";
   position: absolute;
   left: 50%;
@@ -57,20 +57,20 @@ html.mobile-view:has(.f-nav) .hamburger-panel .menu-panel.slide-in::before {
   top: 2.5px;
 }
 
-html.mobile-view:has(.f-nav) .hamburger-panel .menu-panel.slide-in .panel-body {
+html.f-nav-active .hamburger-panel .menu-panel.slide-in .panel-body {
   flex: 1 1 auto;
   min-height: 0;
   height: auto;
 }
 
-html.mobile-view:has(.f-nav)
+html.f-nav-active
   .hamburger-panel
   .menu-panel.slide-in
   .panel-body-contents {
   min-height: 0;
 }
 
-html.mobile-view:has(.f-nav) .hamburger-panel .menu-panel.slide-in {
+html.f-nav-active .hamburger-panel .menu-panel.slide-in {
   top: auto !important;
   // Rest ON TOP of the f-nav bar — its footprint is the bar height plus the
   // safe inset the bar itself carries — never over it: the bar stacks at
@@ -94,7 +94,7 @@ html.mobile-view:has(.f-nav) .hamburger-panel .menu-panel.slide-in {
 // is fixed under the navbar — the sheet must clear it too: cap the height so
 // the sheet's top edge lands below the switcher's bottom edge (the switcher
 // renders 3.5rem + borders ≈ 58px, hence the 4px cushion).
-html.mobile-view:has(.f-nav):has(.c-navbar__title) .hamburger-panel .menu-panel.slide-in {
+html.f-nav-active.f-nav-switcher-top .hamburger-panel .menu-panel.slide-in {
   max-height: min(
     var(--composer-vh, 1dvh) * 85,
     100dvh - var(--f-nav-top, 3.5rem) - 3.5rem - 4px - var(--f-nav-height, 3.66em)
@@ -111,7 +111,7 @@ html.mobile-view:has(.f-nav):has(.c-navbar__title) .hamburger-panel .menu-panel.
 // undimmed behind the sheet. The cloak element itself stays — full height —
 // as the invisible click-catcher, so tapping outside still closes the
 // sheet.
-html.mobile-view:has(.f-nav):has(.hamburger-panel .menu-panel.slide-in) .header-cloak {
+html.f-nav-active.f-nav-drawer-open .header-cloak {
   height: 100%;
   background-color: transparent;
 }
@@ -120,20 +120,14 @@ html.mobile-view:has(.f-nav):has(.hamburger-panel .menu-panel.slide-in) .header-
 // active — the view tabs underneath lose their blue (the drawer covers that
 // view anyway). Purely visual: core's own --active class stays untouched,
 // so the colors restore themselves the moment the drawer closes.
-html.mobile-view:has(.f-nav).has-full-page-chat:has(
-    .hamburger-panel .menu-panel.slide-in
-  )
+html.f-nav-active.has-full-page-chat.f-nav-drawer-open
   nav.c-footer
   .c-footer__item.--active:not(#f-nav-chat-panel-trigger),
-html.mobile-view:has(.f-nav).has-full-page-chat:has(
-    .hamburger-panel .menu-panel.slide-in
-  )
+html.f-nav-active.has-full-page-chat.f-nav-drawer-open
   nav.c-footer
   .c-footer__item.--active:not(#f-nav-chat-panel-trigger)
   svg,
-html.mobile-view:has(.f-nav).has-full-page-chat:has(
-    .hamburger-panel .menu-panel.slide-in
-  )
+html.f-nav-active.has-full-page-chat.f-nav-drawer-open
   nav.c-footer
   .c-footer__item.--active:not(#f-nav-chat-panel-trigger)
   .d-button-label {
@@ -146,6 +140,6 @@ html.mobile-view:has(.f-nav).has-full-page-chat:has(
 // while it rises. While the sheet is open, lift the bar above that entire
 // context: it then stays visible and clickable even mid-animation, and the
 // sheet rises from behind it.
-html.mobile-view:has(.f-nav):has(.hamburger-panel .menu-panel.slide-in) .f-nav {
+html.f-nav-active.f-nav-drawer-open .f-nav {
   z-index: 1001 !important;
 }
