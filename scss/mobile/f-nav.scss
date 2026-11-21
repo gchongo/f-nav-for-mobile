@@ -329,9 +329,14 @@ html.has-full-page-chat {
 
   // The message-creator chooser modal (New group chat / channel picker)
   // opens pinned to the very top of the viewport, covering the chat navbar —
-  // drop it below the navbar instead.
+  // drop it below the navbar; on list views the switcher sits under the
+  // navbar too, so drop below the switcher instead.
   body:has(.f-nav) .modal-container .d-modal.chat-modal-new-message .d-modal__container {
     top: var(--header-offset, 3.5rem);
+  }
+
+  body:has(.f-nav):has(.c-navbar__title) .modal-container .d-modal.chat-modal-new-message .d-modal__container {
+    top: calc(var(--header-offset, 3.5rem) + 3.5rem);
   }
 
   // Opened channels keep their full top navbar and get no bottom switcher at

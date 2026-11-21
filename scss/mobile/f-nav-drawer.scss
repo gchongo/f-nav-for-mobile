@@ -89,6 +89,17 @@ html.mobile-view:has(.f-nav) .hamburger-panel .menu-panel.slide-in {
   border-radius: var(--d-border-radius-large) var(--d-border-radius-large) 0 0;
 }
 
+// On chat list views the switcher (Menu / Starred / Channels / DMs / Search)
+// is fixed under the navbar — the sheet must clear it too: cap the height so
+// the sheet's top edge lands below the switcher's bottom edge (the switcher
+// renders 3.5rem + borders ≈ 58px, hence the 4px cushion).
+html.mobile-view:has(.f-nav):has(.c-navbar__title) .hamburger-panel .menu-panel.slide-in {
+  max-height: min(
+    var(--composer-vh, 1dvh) * 85,
+    100dvh - var(--header-offset, 3.5rem) - 3.5rem - 4px - var(--f-nav-height, 3.66em)
+  );
+}
+
 // The open/close motion is owned by the JS side: initializers/
 // init-sheet-up-animation.js swaps core's hard-coded horizontal Web
 // Animations API slide (which outranks CSS animations) for vertical
@@ -102,6 +113,30 @@ html.mobile-view:has(.f-nav) .hamburger-panel .menu-panel.slide-in {
 html.mobile-view:has(.f-nav):has(.hamburger-panel .menu-panel.slide-in) .header-cloak {
   height: 100%;
   background-color: transparent;
+}
+
+// While the chat panel drawer is open, ONLY the Menu trigger reads as
+// active — the view tabs underneath lose their blue (the drawer covers that
+// view anyway). Purely visual: core's own --active class stays untouched,
+// so the colors restore themselves the moment the drawer closes.
+html.mobile-view:has(.f-nav).has-full-page-chat:has(
+    .hamburger-panel .menu-panel.slide-in
+  )
+  nav.c-footer
+  .c-footer__item.--active:not(#f-nav-chat-panel-trigger),
+html.mobile-view:has(.f-nav).has-full-page-chat:has(
+    .hamburger-panel .menu-panel.slide-in
+  )
+  nav.c-footer
+  .c-footer__item.--active:not(#f-nav-chat-panel-trigger)
+  svg,
+html.mobile-view:has(.f-nav).has-full-page-chat:has(
+    .hamburger-panel .menu-panel.slide-in
+  )
+  nav.c-footer
+  .c-footer__item.--active:not(#f-nav-chat-panel-trigger)
+  .d-button-label {
+  color: var(--primary-medium);
 }
 
 // The sheet and its cloak both live inside .d-header-wrap (sticky,

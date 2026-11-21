@@ -255,11 +255,24 @@ export default class FNav extends Component {
       document.getElementById("f-nav-chat-panel-trigger")?.remove();
       return;
     }
-    const footer = document.querySelector("nav.c-footer");
-    if (!footer || document.getElementById("f-nav-chat-panel-trigger")) {
+    // Keep the trigger's active state in sync: blue while the chat panel
+    // drawer is the open one (core's own tabs turn --active the same way),
+    // gray when it's closed or the site hamburger took over. The observer
+    // re-runs this on every drawer mount/unmount, so outside-click closes
+    // stay in sync too.
+    let btn = document.getElementById("f-nav-chat-panel-trigger");
+    if (btn) {
+      const chatDrawerOpen =
+        !!document.querySelector(".hamburger-panel .menu-panel.slide-in") &&
+        this.sidebarState?._requestedPanelKey === "chat";
+      btn.classList.toggle("--active", chatDrawerOpen);
       return;
     }
-    const btn = document.createElement("button");
+    const footer = document.querySelector("nav.c-footer");
+    if (!footer) {
+      return;
+    }
+    btn = document.createElement("button");
     btn.id = "f-nav-chat-panel-trigger";
     btn.type = "button";
     btn.className = "btn btn-icon-text btn-transparent c-footer__item";
