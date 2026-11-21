@@ -215,11 +215,49 @@ export default class FNav extends Component {
         return;
       }
     }
-    // Chat pages must show the CHAT panel in the drawer (Search chat /
-    // channels / DMs), like core's own hamburger does there — core's
-    // route-based panel switch does not fire for this programmatic open,
-    // so pick the panel explicitly. Forum pages get the main panel back.
-    this.sidebarState?.setPanel?.(this.isInChat ? "chat" : "main");
+    // Chat pages must show the CHAT panel (Search chat / Starred channels /
+    // Channels / DMs), like core's own hamburger does there. core's
+    // setPanel('chat') cannot be used here: its restorePreviousState runs
+    // setCombinedMode, which slams the requested panel back to main (combined
+    // = forum and chat sections mixed). Set the separated mode and the chat
+    // panel key directly instead. Forum pages get the main panel back.
+    if (this.isInChat) {
+      this.sidebarState?.setSeparatedMode?.();
+      this.sidebarState._requestedPanelKey = "chat";
+      // The sidebar sections remember their collapsed state per device — a
+      // collapsed section renders only its header (a › chevron, no rows), so
+      // the index looks empty. The chat index must show every channel/DM
+      // row, so force all its sections expanded on every open.
+      for (const id of [
+        "chat-starred-channels",
+        "chat-channels",
+        "chat-dms",
+        "chat-live-rooms",
+      ]) {
+        try {
+          if (this.sidebarState.isSectionCollapsed?.(id)) {
+            this.sidebarState.expandSection?.(id);
+          }
+        } catch (e) {
+          // section ids can vary between core versions
+        }
+      }
+      // Some sections (e.g. Live rooms) render collapsed with a header the
+      // state layer doesn't track — and the drawer body mounts a beat after
+      // the open. Two deferred passes click any header still collapsed once
+      // the drawer has rendered.
+      const expandStillCollapsed = () => {
+        document
+          .querySelectorAll(
+            ".hamburger-panel .sidebar-section-wrapper:not(.sidebar-section--expanded) .sidebar-section-header"
+          )
+          .forEach((h) => h.click());
+      };
+      setTimeout(expandStillCollapsed, 400);
+      setTimeout(expandStillCollapsed, 900);
+    } else {
+      this.sidebarState?.setPanel?.("main");
+    }
     this.#handleElementClick("toggle-hamburger-menu");
   }
 
