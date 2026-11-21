@@ -21,16 +21,20 @@ const CHAT_FOOTER_CLASS = "footer-nav-visible";
 // handlers then decide open/close themselves and close through the cloak's
 // animated dismiss path (see toggleHamburger / toggleChatPanel) — without
 // this, the second tap of either trigger re-opened the drawer instead of
-// closing it.
+// closing it. The ☰ tab is matched by its data-tab-function attribute, NOT
+// by its icon: sites without the JTech icon remap render core icons there,
+// so an icon-based match silently never fires on them (cax.do).
 document.addEventListener(
   "pointerdown",
   (e) => {
     if (!document.querySelector(".hamburger-panel .menu-panel.slide-in")) {
       return;
     }
-    const hamburgerTab = e.target.closest?.(".f-nav .tab");
+    const hamburgerTab = e.target.closest?.(
+      '.f-nav .tab[data-tab-function="hamburger"]'
+    );
     if (
-      (hamburgerTab && hamburgerTab.querySelector('use[href="#jt-menu"]')) ||
+      hamburgerTab ||
       e.target.closest?.("#f-nav-chat-panel-trigger")
     ) {
       e.stopPropagation();
@@ -249,8 +253,26 @@ export default class FNav extends Component {
     setTimeout(expandStillCollapsed, 900);
   }
 
+  // Chat navbar: the back-to-forum link renders the site's own logo (read
+  // from the favicon — per-site safe: each site's favicon is its own logo)
+  // instead of the arrow + "Forum" text.
+  @action
+  setupChatNavbarLogo() {
+    if (!this.isInChat) return;
+    const link = document.querySelector(".back-to-forum");
+    if (!link || link.dataset.fnavLogo) return;
+    const favicon = document
+      .querySelector('link[rel="shortcut icon"], link[rel="icon"]')
+      ?.getAttribute("href");
+    if (!favicon) return;
+    link.dataset.fnavLogo = "true";
+    link.classList.add("f-nav-chat-logo");
+    link.innerHTML = `<img class="f-nav-chat-logo-img" src="${favicon}" alt="">`;
+  }
+
   @action
   ensureChatPanelTrigger() {
+    this.setupChatNavbarLogo();
     if (!this.isInChat) {
       document.getElementById("f-nav-chat-panel-trigger")?.remove();
       return;

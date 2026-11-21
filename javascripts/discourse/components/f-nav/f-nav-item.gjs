@@ -183,6 +183,7 @@ export default class FNavItem extends Component {
         type="button"
         class="tab"
         data-destination={{this.destination}}
+        data-tab-function={{@tab.function}}
         {{on "click" this.clickHandler}}
       >
         {{#if this.exitsChat}}

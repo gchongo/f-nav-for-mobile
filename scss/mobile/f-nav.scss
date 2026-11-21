@@ -309,6 +309,20 @@ html.has-full-page-chat {
     display: none;
   }
 
+  // The back-to-forum link, re-rendered by f-nav.gjs as the site logo (the
+  // swap reads the logo from the site's favicon — per-site safe).
+  body:has(.f-nav) .back-to-forum {
+    display: flex;
+    align-items: center;
+    padding: 0;
+
+    .f-nav-chat-logo-img {
+      width: 38px;
+      height: 38px;
+      object-fit: contain;
+    }
+  }
+
   body:has(.f-nav):has(.c-navbar__title) .c-footer {
     display: flex !important;
     position: fixed;
