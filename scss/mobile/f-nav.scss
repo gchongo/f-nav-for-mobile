@@ -327,6 +327,13 @@ html.has-full-page-chat {
     padding-top: 3.5rem;
   }
 
+  // The message-creator chooser modal (New group chat / channel picker)
+  // opens pinned to the very top of the viewport, covering the chat navbar —
+  // drop it below the navbar instead.
+  body:has(.f-nav) .modal-container .d-modal.chat-modal-new-message .d-modal__container {
+    top: var(--header-offset, 3.5rem);
+  }
+
   // Opened channels keep their full top navbar and get no bottom switcher at
   // all: the chat plugin mounts <ChatFooter /> only in the drawer-route list
   // views (channels / direct messages / starred / threads / search), never

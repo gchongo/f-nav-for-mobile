@@ -13,19 +13,26 @@ import FNavItem from "./f-nav-item";
 // PWA bar): on /chat this bar takes that place (scss/mobile/f-nav-root.scss).
 const CHAT_FOOTER_CLASS = "footer-nav-visible";
 
-// With the bar lifted above the cloak, the chat-panel trigger is the pointer
-// target when the chat drawer is open — and core's outside-click handler
-// tears the drawer wrapper down INSTANTLY (no animation) for any outside
-// target that is not the cloak itself. Block that pointerdown from leaving
-// the trigger: its click handler then closes through the cloak's animated
-// dismiss path instead (see toggleChatPanel).
+// With the bar lifted above the cloak, the bar's own triggers (the ☰ tab and
+// the chat-panel button) are the pointer targets when a drawer is open — and
+// core's outside-click handler tears the drawer wrapper down INSTANTLY (no
+// animation) during pointerdown for any outside target that is not the cloak
+// itself. Block that pointerdown from leaving those triggers: their click
+// handlers then decide open/close themselves and close through the cloak's
+// animated dismiss path (see toggleHamburger / toggleChatPanel) — without
+// this, the second tap of either trigger re-opened the drawer instead of
+// closing it.
 document.addEventListener(
   "pointerdown",
   (e) => {
     if (!document.querySelector(".hamburger-panel .menu-panel.slide-in")) {
       return;
     }
-    if (e.target.closest?.("#f-nav-chat-panel-trigger")) {
+    const hamburgerTab = e.target.closest?.(".f-nav .tab");
+    if (
+      (hamburgerTab && hamburgerTab.querySelector('use[href="#jt-menu"]')) ||
+      e.target.closest?.("#f-nav-chat-panel-trigger")
+    ) {
       e.stopPropagation();
     }
   },
@@ -158,8 +165,30 @@ export default class FNav extends Component {
 
   @action
   toggleHamburger() {
-    // The site hamburger: always the main (forum) panel. The chat panel
-    // drawer has its own trigger on chat pages (see toggleChatPanel).
+    if (document.querySelector(".hamburger-panel .menu-panel.slide-in")) {
+      // Closing (the drawer is still open because the pointerdown blocker
+      // below kept core's instant teardown from running on this tap). Core
+      // only ANIMATES the dismiss when the closing pointer event lands on
+      // the cloak itself — replay the pointer sequence there so the second
+      // tap closes with the same slide-down animation as the open.
+      const cloak = document.querySelector(".header-cloak");
+      if (cloak) {
+        const opts = {
+          bubbles: true,
+          cancelable: true,
+          composed: true,
+          pointerId: 1,
+          pointerType: "touch",
+          isPrimary: true,
+        };
+        cloak.dispatchEvent(new PointerEvent("pointerdown", opts));
+        cloak.dispatchEvent(new PointerEvent("pointerup", opts));
+        cloak.dispatchEvent(new MouseEvent("click", opts));
+        return;
+      }
+    }
+    // Opening: the site hamburger always shows the main (forum) panel — the
+    // chat panel drawer has its own trigger on chat pages (toggleChatPanel).
     this.sidebarState?.setPanel?.("main");
     this.#handleElementClick("toggle-hamburger-menu");
   }
