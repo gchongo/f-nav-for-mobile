@@ -330,10 +330,10 @@ export default class FNav extends Component {
     link.dataset.fnavLogo = "true";
     link.classList.add("f-nav-chat-logo");
     const interfaceColor = this.#interfaceColor();
-    const dark = !!interfaceColor?.colorModeIsDark;
+    const isDark = !!interfaceColor?.colorModeIsDark;
     link.innerHTML = `<img class="f-nav-chat-logo-img${
-      dark ? " dark" : ""
-    }" src="${dark && dark !== light ? dark : light}" alt="">`;
+      isDark ? " dark" : ""
+    }" src="${isDark && dark !== light ? dark : light}" alt="">`;
   }
 
   // Re-syncs the chat navbar logo's src/class when the color mode flips (the
