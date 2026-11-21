@@ -339,11 +339,10 @@ html.has-full-page-chat {
     padding: 0;
 
     .f-nav-chat-logo-img {
-      // The header's main logo: the natural width, the height matching the
-      // navbar's logo row.
-      height: 34px;
-      width: auto;
-      max-width: 160px;
+      // The MOBILE logo: the 38px square, the same asset the forum's mobile
+      // header shows.
+      width: 38px;
+      height: 38px;
       object-fit: contain;
     }
 
