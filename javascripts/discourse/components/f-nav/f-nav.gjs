@@ -43,6 +43,24 @@ document.addEventListener(
   true
 );
 
+// Measure the top bars' real bottom edge (site header + chat navbar, which
+// stack differently per site/theme/device) into --f-nav-top. The chat
+// layout's top offsets (the switcher, the composer, the chooser modal, the
+// drawer cap) hang off this measured value — core's own --header-offset
+// measures unreliably on iOS (dynamic viewport + safe areas can yield 0),
+// which made the switcher overlap the navbar and the drawers cover the logo
+// bar on phones.
+const measureTopBars = () => {
+  const header = document.querySelector(".d-header-wrap .d-header");
+  const bottom = header ? header.getBoundingClientRect().bottom : 0;
+  document.documentElement.style.setProperty(
+    "--f-nav-top",
+    Math.max(0, Math.round(bottom)) + "px"
+  );
+};
+window.addEventListener("resize", measureTopBars);
+window.visualViewport?.addEventListener("resize", measureTopBars);
+
 export default class FNav extends Component {
   @service router;
   @service currentUser;
@@ -74,6 +92,7 @@ export default class FNav extends Component {
   // Only ever removes the class it added, so core's PWA bar keeps its own.
   @action
   syncChatFooter() {
+    measureTopBars();
     const classes = document.documentElement.classList;
     if (this.isInChat) {
       if (!classes.contains(CHAT_FOOTER_CLASS)) {
@@ -272,6 +291,7 @@ export default class FNav extends Component {
 
   @action
   ensureChatPanelTrigger() {
+    measureTopBars();
     this.setupChatNavbarLogo();
     if (!this.isInChat) {
       document.getElementById("f-nav-chat-panel-trigger")?.remove();

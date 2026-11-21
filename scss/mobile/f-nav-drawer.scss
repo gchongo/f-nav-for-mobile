@@ -80,7 +80,7 @@ html.mobile-view:has(.f-nav) .hamburger-panel .menu-panel.slide-in {
   height: auto;
   max-height: min(
     var(--composer-vh, 1dvh) * 85,
-    100dvh - var(--header-offset, 3.5rem) - var(--f-nav-height, 3.66em)
+    100dvh - var(--f-nav-top, 3.5rem) - var(--f-nav-height, 3.66em)
   );
   padding-top: var(--space-3);
   // The sheet ends at the bar's top edge, so the safe inset belongs to the
@@ -96,7 +96,7 @@ html.mobile-view:has(.f-nav) .hamburger-panel .menu-panel.slide-in {
 html.mobile-view:has(.f-nav):has(.c-navbar__title) .hamburger-panel .menu-panel.slide-in {
   max-height: min(
     var(--composer-vh, 1dvh) * 85,
-    100dvh - var(--header-offset, 3.5rem) - 3.5rem - 4px - var(--f-nav-height, 3.66em)
+    100dvh - var(--f-nav-top, 3.5rem) - 3.5rem - 4px - var(--f-nav-height, 3.66em)
   );
 }
 
