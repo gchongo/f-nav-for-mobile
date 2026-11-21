@@ -76,24 +76,6 @@ export default class FNavItem extends Component {
     return this.args.tab?.destination;
   }
 
-  // The tab that opens the chat (its own, Multi Tab's messages-and-chat, or a custom one
-  // pointing at /chat) leads back to the forum from inside it, as the AI bot tab does
-  // from its conversations: the same shuffle icon, to the last page outside.
-  get exitsChat() {
-    const route = this.router.currentRouteName || "";
-    const inChat = route === "chat" || route.startsWith("chat.");
-    const opensChat =
-      this.isChat ||
-      this.isMulti ||
-      /^\/chat(\/|$)/.test(this.args.tab?.destination || "");
-    return inChat && opensChat;
-  }
-
-  exitChat = () => {
-    const chatState = getOwner(this).lookup("service:chat-state-manager");
-    DiscourseURL.routeTo(chatState?.lastKnownAppURL || "/");
-  };
-
   // The compose tab (function "compose", or a custom tab pointing at /new-topic): a reply
   // in a topic the user can post in, a new topic everywhere else, in the category being
   // viewed. The composer service's own entry points, so drafts reopen as usual.
@@ -126,9 +108,6 @@ export default class FNavItem extends Component {
   get clickHandler() {
     if (this.isCompose) {
       return this.compose;
-    }
-    if (this.exitsChat) {
-      return this.exitChat;
     }
     if (this.isHome) {
       return this.args.onHomeClick;
@@ -186,9 +165,7 @@ export default class FNavItem extends Component {
         data-tab-function={{@tab.function}}
         {{on "click" this.clickHandler}}
       >
-        {{#if this.exitsChat}}
-          {{dIcon "shuffle"}}
-        {{else if this.isCompose}}
+        {{#if this.isCompose}}
           {{dIcon (if this.replyTopic "reply" @tab.icon)}}
         {{else if this.isHome}}
           {{#if @isTopicRoute}}
@@ -230,9 +207,7 @@ export default class FNavItem extends Component {
         {{/if}}
         {{#if this.showLabels}}
           <div class="tab-label">
-            {{#if this.exitsChat}}
-              {{i18n "sidebar.back_to_forum"}}
-            {{else if (and this.isCompose this.replyTopic)}}
+            {{#if (and this.isCompose this.replyTopic)}}
               {{i18n "topic.reply.title"}}
             {{else if (and this.isHome @isTopicRoute)}}
               {{i18n "js.back_button"}}
