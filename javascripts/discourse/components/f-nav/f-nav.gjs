@@ -297,19 +297,16 @@ export default class FNav extends Component {
     syncHtmlState();
   }
 
-  // Chat navbar: the back-to-forum link renders the site's own MOBILE logo
-  // (light/dark variants from the preloaded site settings — per-site safe,
-  // follows the color mode) instead of the arrow + "Forum" text.
+  // Chat navbar: the back-to-forum link renders the site's OWN header logo —
+  // the exact <picture> markup the homepage header uses (the dark source +
+  // the light fallback), so the same image renders at the same size.
   @action
   setupChatNavbarLogo() {
     if (!this.isInChat) return;
     const link = document.querySelector(".back-to-forum");
-    if (!link || link.dataset.fnavLogo) {
-      this.syncChatNavbarLogoMode();
-      return;
-    }
-    let light = null,
-      dark = null;
+    if (!link || link.dataset.fnavLogo) return;
+    let logo = null,
+      logoDark = null;
     try {
       const pre = document.getElementById("data-preloaded");
       const data = JSON.parse(pre.textContent);
@@ -317,48 +314,19 @@ export default class FNav extends Component {
       if (typeof ss === "string") {
         ss = JSON.parse(ss);
       }
-      // The MOBILE logo (the 38px square the forum's mobile header shows),
-      // light and dark variants.
-      light = ss?.site_mobile_logo_url || ss?.site_logo_small_url || null;
-      dark = ss?.site_mobile_logo_dark_url || ss?.site_logo_small_dark_url || light || null;
+      logo = ss?.logo || ss?.site_logo_url || null;
+      logoDark = ss?.logo_dark || ss?.site_logo_dark_url || logo || null;
     } catch (e) {
       // no preloaded data — leave the link as core rendered it
     }
-    if (!light) return;
+    if (!logo) return;
     link.dataset.fnavLogo = "true";
     link.classList.add("f-nav-chat-logo");
-    const interfaceColor = this.#interfaceColor();
-    const isDark = !!interfaceColor?.colorModeIsDark;
-    link.innerHTML = `<img class="f-nav-chat-logo-img${
-      isDark ? " dark" : ""
-    }" src="${isDark && dark !== light ? dark : light}" alt="">`;
-  }
-
-  // Re-syncs the chat navbar logo's src/class when the color mode flips (the
-  // palette switch doesn't reload the page — the observer flow re-runs this).
-  @action
-  syncChatNavbarLogoMode() {
-    const img = document.querySelector(".f-nav-chat-logo-img");
-    if (!img) return;
-    let light = null,
-      dark = null;
-    try {
-      const pre = document.getElementById("data-preloaded");
-      const data = JSON.parse(pre.textContent);
-      let ss = data.siteSettings;
-      if (typeof ss === "string") {
-        ss = JSON.parse(ss);
-      }
-      // The MOBILE logo (the 38px square the forum's mobile header shows),
-      // light and dark variants.
-      light = ss?.site_mobile_logo_url || ss?.site_logo_small_url || null;
-      dark = ss?.site_mobile_logo_dark_url || ss?.site_logo_small_dark_url || light || null;
-    } catch (e) {
-      return;
-    }
-    const darkMode = !!this.#interfaceColor()?.colorModeIsDark;
-    img.src = darkMode ? dark || light : light || dark;
-    img.classList.toggle("dark", !!darkMode);
+    link.innerHTML = `<picture>${
+      logoDark && logoDark !== logo
+        ? `<source media="all" srcset="${logoDark}">`
+        : ""
+    }<img class="f-nav-chat-logo-img" src="${logo}" alt=""></picture>`;
   }
 
   #interfaceColor() {

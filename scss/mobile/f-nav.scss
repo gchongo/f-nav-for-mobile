@@ -338,13 +338,9 @@ html.has-full-page-chat {
     align-items: center;
     padding: 0;
 
-    .f-nav-chat-logo-img {
-      // The MOBILE logo: the 38px square, the same asset the forum's mobile
-      // header shows.
-      width: 38px;
-      height: 38px;
-      object-fit: contain;
-    }
+    // The logo img renders at its natural size — the same as the homepage
+    // header's logo (no sizing, no cropping). The <picture> swap in
+    // f-nav.gjs picks the dark/light asset per the site's own markup.
 
     // Dark mode uses its own logo asset (site_mobile_logo_dark_url — the
     // swap logic in f-nav.gjs picks it per color mode), no filter needed.
