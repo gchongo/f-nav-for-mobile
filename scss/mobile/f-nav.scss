@@ -279,9 +279,9 @@ html:not(.anon) {
     // (cax.do's stock composer) show it as a white slab over the page, so
     // the closed box is hidden entirely.
     #reply-control:not(.closed) {
-      top: var(--f-nav-top, 3.5rem);
-      bottom: calc(var(--f-nav-height, 3.66em) + env(safe-area-inset-bottom));
-      height: auto;
+      top: var(--f-nav-top, 3.5rem) !important;
+      bottom: calc(var(--f-nav-height, 3.66em) + env(safe-area-inset-bottom)) !important;
+      height: auto !important;
     }
 
     #reply-control.closed {
@@ -341,7 +341,7 @@ html.has-full-page-chat {
   body:has(.f-nav):has(.c-navbar__title) .c-footer {
     display: flex !important;
     position: fixed;
-    top: var(--f-nav-top, 3.5rem);
+    top: var(--f-nav-top, 3.5rem) !important;
     left: 0;
     right: 0;
     height: 3.5rem !important;
@@ -361,11 +361,11 @@ html.has-full-page-chat {
   // drop it below the navbar; on list views the switcher sits under the
   // navbar too, so drop below the switcher instead.
   body:has(.f-nav) .modal-container .d-modal.chat-modal-new-message .d-modal__container {
-    top: var(--f-nav-top, 3.5rem);
+    top: var(--f-nav-top, 3.5rem) !important;
   }
 
   body:has(.f-nav):has(.c-navbar__title) .modal-container .d-modal.chat-modal-new-message .d-modal__container {
-    top: calc(var(--f-nav-top, 3.5rem) + 3.5rem);
+    top: calc(var(--f-nav-top, 3.5rem) + 3.5rem) !important;
   }
 
   // Opened channels keep their full top navbar and get no bottom switcher at

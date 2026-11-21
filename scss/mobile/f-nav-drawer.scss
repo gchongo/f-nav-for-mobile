@@ -16,7 +16,7 @@
 
 html.mobile-view:has(.f-nav) .menu-panel.slide-in,
 html.mobile-view:has(.f-nav) .header-cloak {
-  height: calc(100dvh - var(--f-nav-height, 3.66em) - env(safe-area-inset-bottom));
+  height: calc(100dvh - var(--f-nav-height, 3.66em) - env(safe-area-inset-bottom)) !important;
 }
 
 html.mobile-view:has(.f-nav) .menu-panel.slide-in {
@@ -24,15 +24,15 @@ html.mobile-view:has(.f-nav) .menu-panel.slide-in {
 }
 
 html.mobile-view:has(.f-nav) .hamburger-panel .menu-panel.slide-in {
-  right: 0;
-  left: 0;
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  max-width: none;
-  overflow: hidden;
-  border: 0;
-  background: var(--jt-surface-raised, var(--secondary));
+  right: 0 !important;
+  left: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
+  max-width: none !important;
+  overflow: hidden !important;
+  border: 0 !important;
+  background: var(--jt-surface-raised, var(--secondary)) !important;
   // No drop shadow: the sheet rests directly on the f-nav bar and should
   // read as one continuous surface with it, not a floating modal.
   box-shadow: none;
@@ -40,7 +40,7 @@ html.mobile-view:has(.f-nav) .hamburger-panel .menu-panel.slide-in {
   // bar instead of sweeping over it — the bar stays visible and clickable
   // even during the 200ms slide-up. The sheet never overlaps the bar at
   // rest (it stops at its top edge), so this only matters mid-animation.
-  z-index: 298;
+  z-index: 298 !important;
 }
 
 // The grab handle of the sheet.
@@ -71,17 +71,17 @@ html.mobile-view:has(.f-nav)
 }
 
 html.mobile-view:has(.f-nav) .hamburger-panel .menu-panel.slide-in {
-  top: auto;
+  top: auto !important;
   // Rest ON TOP of the f-nav bar — its footprint is the bar height plus the
   // safe inset the bar itself carries — never over it: the bar stacks at
   // z-index 299 while this panel is 1000, so any overlap would bury the bar
   // behind the sheet's opaque background.
-  bottom: calc(var(--f-nav-height, 3.66em) + env(safe-area-inset-bottom));
-  height: auto;
+  bottom: calc(var(--f-nav-height, 3.66em) + env(safe-area-inset-bottom)) !important;
+  height: auto !important;
   max-height: min(
     var(--composer-vh, 1dvh) * 85,
     100dvh - var(--f-nav-top, 3.5rem) - var(--f-nav-height, 3.66em)
-  );
+  ) !important;
   padding-top: var(--space-3);
   // The sheet ends at the bar's top edge, so the safe inset belongs to the
   // bar alone — a flat padding here instead of another env() copy.
@@ -97,7 +97,7 @@ html.mobile-view:has(.f-nav):has(.c-navbar__title) .hamburger-panel .menu-panel.
   max-height: min(
     var(--composer-vh, 1dvh) * 85,
     100dvh - var(--f-nav-top, 3.5rem) - 3.5rem - 4px - var(--f-nav-height, 3.66em)
-  );
+  ) !important;
 }
 
 // The open/close motion is owned by the JS side: initializers/
@@ -146,5 +146,5 @@ html.mobile-view:has(.f-nav).has-full-page-chat:has(
 // context: it then stays visible and clickable even mid-animation, and the
 // sheet rises from behind it.
 html.mobile-view:has(.f-nav):has(.hamburger-panel .menu-panel.slide-in) .f-nav {
-  z-index: 1001;
+  z-index: 1001 !important;
 }
