@@ -274,10 +274,18 @@ html:not(.anon) {
 
     // The full-page topic composer: below the header (the logo bar), above
     // the f-nav bar — core's mobile composer is inset-0 and covers both.
-    #reply-control {
+    // :not(.closed) is required — core hides the closed composer's INNER
+    // content but leaves the box in place; themes that paint the box itself
+    // (cax.do's stock composer) show it as a white slab over the page, so
+    // the closed box is hidden entirely.
+    #reply-control:not(.closed) {
       top: var(--header-offset, 3.5rem);
       bottom: calc(var(--f-nav-height, 3.66em) + env(safe-area-inset-bottom));
       height: auto;
+    }
+
+    #reply-control.closed {
+      visibility: hidden;
     }
 
     // Docked Composer (the draft strip rides inside the constrained
