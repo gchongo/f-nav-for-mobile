@@ -390,9 +390,10 @@ html.has-full-page-chat {
     display: list-item;
   }
 
-  &.keyboard-visible .f-nav {
-    display: none;
-  }
+  // The old keyboard-visible hide (display:none on keyboard-open) is removed:
+  // the on-screen keyboard covers the bar by itself while it's up, and the
+  // class could get stuck after the keyboard closed on PWAs, leaving the bar
+  // permanently hidden (the missing-bar-under-the-composer report).
 }
 
 // Nested View
