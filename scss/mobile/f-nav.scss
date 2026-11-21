@@ -339,8 +339,11 @@ html.has-full-page-chat {
     padding: 0;
 
     .f-nav-chat-logo-img {
-      width: 38px;
-      height: 38px;
+      // The header's main logo: the natural width, the height matching the
+      // navbar's logo row.
+      height: 34px;
+      width: auto;
+      max-width: 160px;
       object-fit: contain;
     }
 

@@ -317,12 +317,10 @@ export default class FNav extends Component {
       if (typeof ss === "string") {
         ss = JSON.parse(ss);
       }
-      light = ss?.site_mobile_logo_url || ss?.site_logo_small_url || null;
-      dark =
-        ss?.site_mobile_logo_dark_url ||
-        ss?.site_logo_small_dark_url ||
-        light ||
-        null;
+      // The header's main logo (the wide icon+wordmark the forum header
+      // shows), light and dark variants.
+      light = ss?.site_logo_url || ss?.site_mobile_logo_url || null;
+      dark = ss?.site_logo_dark_url || ss?.site_mobile_logo_dark_url || light || null;
     } catch (e) {
       // no preloaded data — leave the link as core rendered it
     }
@@ -351,12 +349,10 @@ export default class FNav extends Component {
       if (typeof ss === "string") {
         ss = JSON.parse(ss);
       }
-      light = ss?.site_mobile_logo_url || ss?.site_logo_small_url || null;
-      dark =
-        ss?.site_mobile_logo_dark_url ||
-        ss?.site_logo_small_dark_url ||
-        light ||
-        null;
+      // The header's main logo (the wide icon+wordmark the forum header
+      // shows), light and dark variants.
+      light = ss?.site_logo_url || ss?.site_mobile_logo_url || null;
+      dark = ss?.site_logo_dark_url || ss?.site_mobile_logo_dark_url || light || null;
     } catch (e) {
       return;
     }
