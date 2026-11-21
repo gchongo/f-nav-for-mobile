@@ -266,7 +266,7 @@ export default class FNav extends Component {
     btn.setAttribute("aria-label", "Chat sections");
     btn.title = "Chat sections";
     btn.innerHTML =
-      '<svg class="fa d-icon d-icon-layers svg-icon fa-width-auto svg-string" width="1em" height="1em" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><use href="#jt-layers"></use></svg><span class="d-button-label">Menu</span>';
+      '<svg class="fa d-icon d-icon-layer-group svg-icon fa-width-auto svg-string" width="1em" height="1em" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><use href="#layer-group"></use></svg><span class="d-button-label">Menu</span>';
     btn.addEventListener("click", this.toggleChatPanel);
     footer.prepend(btn);
   }
