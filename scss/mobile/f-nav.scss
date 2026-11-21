@@ -343,6 +343,12 @@ html.has-full-page-chat {
       height: 38px;
       object-fit: contain;
     }
+
+    // Dark mode: the logo asset is a monochrome glyph — invert it to the
+    // white variant (matches the header logo's dark palette).
+    .f-nav-chat-logo-img.dark {
+      filter: invert(1);
+    }
   }
 
   body:has(.f-nav):has(.c-navbar__title) .c-footer {

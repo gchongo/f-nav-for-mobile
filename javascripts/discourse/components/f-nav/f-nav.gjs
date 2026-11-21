@@ -7,6 +7,7 @@ import willDestroy from "@ember/render-modifiers/modifiers/will-destroy";
 import DiscourseURL from "discourse/lib/url";
 import DoNotDisturb from "discourse/lib/do-not-disturb";
 import EmbedMode from "discourse/lib/embed-mode";
+import { getOwner } from "@ember/application";
 import FNavItem from "./f-nav-item";
 
 // Core shortens the full-page chat by --footer-nav-height under this class (its own
@@ -298,7 +299,10 @@ export default class FNav extends Component {
 
   // Chat navbar: the back-to-forum link renders the site's own logo (read
   // from the favicon — per-site safe: each site's favicon is its own logo)
-  // instead of the arrow + "Forum" text.
+  // instead of the arrow + "Forum" text. The logo follows the color mode:
+  // the interface-color service's colorModeIsDark drives the dark class (the
+  // observer flow re-syncs on every palette switch), and the CSS inverts the
+  // monochrome logo for dark mode.
   @action
   setupChatNavbarLogo() {
     if (!this.isInChat) return;
@@ -310,7 +314,19 @@ export default class FNav extends Component {
     if (!favicon) return;
     link.dataset.fnavLogo = "true";
     link.classList.add("f-nav-chat-logo");
-    link.innerHTML = `<img class="f-nav-chat-logo-img" src="${favicon}" alt="">`;
+    const interfaceColor = this.#interfaceColor();
+    const dark = !!interfaceColor?.colorModeIsDark;
+    link.innerHTML = `<img class="f-nav-chat-logo-img${
+      dark ? " dark" : ""
+    }" src="${favicon}" alt="">`;
+  }
+
+  #interfaceColor() {
+    try {
+      return getOwner(this).lookup("service:interface-color") ?? null;
+    } catch (e) {
+      return null;
+    }
   }
 
   @action
@@ -318,6 +334,12 @@ export default class FNav extends Component {
     measureTopBars();
     syncHtmlState();
     this.setupChatNavbarLogo();
+    // keep the chat navbar logo's dark class in step with the color mode
+    const chatLogoImg = document.querySelector('.f-nav-chat-logo-img');
+    if (chatLogoImg) {
+      const interfaceColor = this.#interfaceColor();
+      chatLogoImg.classList.toggle('dark', !!interfaceColor?.colorModeIsDark);
+    }
     if (!this.isInChat) {
       document.getElementById("f-nav-chat-panel-trigger")?.remove();
       return;
